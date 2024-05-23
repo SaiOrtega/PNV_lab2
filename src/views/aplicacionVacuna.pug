@@ -1,0 +1,290 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.mx-auto.container.mt-5.w-50.position-relative(data-bs-theme="primary")
+    h1.h1.text-center.mb-5(style="color: #FF5722;") Aplicación    
+    if resultados && resultados.length > 0
+      .d-flex.gap-3.form-floating.justify-content.align-items-center.mx-auto.col-9.text-center
+        h3.h3.mx-auto( style="color: #FF5722;") Vacuna 
+      form#aplicacionForm.form.row.g-3.w-100.mx-auto.mt-2(action="aplicacionVacunaPost", method="post" data-bs-theme="primary" onsubmit=`return confirmarAplicacion(event)`)
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-5.text-center
+        select#provinciaSelect.form-select(name="provinciaSelect" required)
+           option(value="-") -
+            each optionValue, optionLabel in [...new Set(localidades.map(aux => aux.provincia))]
+             option(value=optionValue.idLocalidad)= optionValue  
+        label.ms-2(for="provinciaSelect" )  Provincias 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#centros.form-select(name="centro" disabled required)
+        label.ms-2(for="centros")  Centros de Vacunacion     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#vacunas.form-select(name="vacunas" disabled required,)
+        label.ms-2(for="vacunas")  Vacunas     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#lote.form-select(name="lote" disabled required)
+        label.ms-2(for="lote")  N° de Lote     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#sublote.form-select(name="sublote" disabled required)
+        label.ms-2(for="sublote") N° de Lote Interno  
+       .d-flex.gap-5.justify-content.align-items-center.mx-auto.col-12.text-center
+        label.ms-2(for="sublote") Stock
+        input#cantVacunas.form-control(name="cantVacunas" disabled required) 
+       .d-flex.gap-5.text-center.form-floating.justify-content-center.align-items-center.mx-auto.col-12.text-center
+        h3.m-3(style="color: #FF5722;") Paciente  
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#nombre.form-control(name="nombre" type="text" placeholder="sds" required,style="background-color: #FDFEFE; color: #FF5722;")
+        label.ms-2(for="nombre")  Nombre 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#apellido.form-control(name="apellido" type="text" placeholder="sds" required,)
+        label.ms-2(for="apellido")  Apellido 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#ciudad.form-control(name="ciudad" type="text" placeholder="sds" required)
+        label.ms-2(for="ciudad")  Ciudad 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#provinciaSelect.form-select(name="provincia" required)
+           option(value="-") -
+            each optionValue, optionLabel in [...new Set(localidadesTodas.map(aux => aux.provincia))]
+             option(value=optionValue.idLocalidad)= optionValue 
+        label.ms-2(for="provinciaSelect")  Provincia
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#dni.form-control(name="dni" type="number" placeholder="sds" required)
+        label.ms-2(for="dni")  DNI 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#telefono.form-control(name="telefono" type="number" placeholder="sds" required)
+        label.ms-2(for="telefono")  Telefono 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-.text-center        
+        input#direccion.form-control(name="direccion" type="text" placeholder="sds" required)
+        label.ms-2(for="direccion")  Direccion 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        select#genero.form-select(name="genero" required)
+         option(value="-") -
+         option(value="Masculino") Masculino
+         option(value="Femenino") Femenino     
+        label.ms-2(for="genero")  Genero 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#email.form-control(name="email" type="email" placeholder="sds" required)
+        label.ms-2(for="email")  Email
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#fechaAplicacion.form-control(name="fechaAplicacion" type="date" placeholder="sds" required)
+        label.ms-2(for="fechaAplicacion")  Fecha de Aplicación
+       .d-flex.gap-5.text-center.form-floating.justify-content-center.align-items-center.mx-auto.col-12.text-center
+        h3.m-3(style="color: #FF5722;") Enfermero 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        select#enfermeros.form-select(name="enfermero" required disabled)
+        label.ms-2(for="enfermero")  Enfermeros
+       
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center     
+        input#nombreEnfermero.form-control(name="nombreEnfermero" type="text" placeholder="sds"  )
+        label.ms-2(for="nombreEnfermero")  Nombre 
+   
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-11.text-center.fle-wrap
+           button.btn.btn-primary.mx-auto.mb-5(type="submit", style="background-color: #FF5722; border-color: #FF5722;") Aplicar
+             
+  script.
+   const resultado = !{JSON.stringify(resultados)};
+   const centrosVacunacion=!{JSON.stringify(resultadoCentros)};
+   const enfermeros = !{JSON.stringify(resultadoEnfermeros)};
+   const provinciaSelect = document.getElementById('provinciaSelect');
+   const centrosSelect =document.getElementById('centros');
+   const vacunasSelect = document.getElementById('vacunas');
+   const loteSelect = document.getElementById('lote');
+   const subloteSelect = document.getElementById('sublote');
+   const enfermerosSelect = document.getElementById('enfermeros');
+   const cantVacunas = document.getElementById('cantVacunas');
+   const fechaAplicacion = document.getElementById('fechaAplicacion');
+   const nombreEnfermero = document.getElementById('nombreEnfermero');
+   cantVacunas.value=""
+
+   provinciaSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia2 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia3 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia4 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia5 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    cantVacunas.value=""
+
+    const provincia = provinciaSelect.value;
+    centrosSelect.innerHTML = '';
+    centrosSelect.appendChild(optionVacia)
+    centrosSelect.disabled= true 
+    vacunasSelect.innerHTML = '';
+    vacunasSelect.appendChild(optionVacia2)
+    vacunasSelect.disabled= true 
+    enfermerosSelect.innerHTML = '';
+    enfermerosSelect.appendChild(optionVacia3)
+    enfermerosSelect.disabled= true
+    loteSelect.innerHTML = '';
+    loteSelect.appendChild(optionVacia4)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia5)
+    subloteSelect.disabled= true
+
+    centrosVacunacion.forEach(centro => {
+        if(centro.provincia===provinciaSelect.value){
+            centrosSelect.disabled= false 
+            const option = document.createElement("option");
+            option.value = centro.idCentro;
+            option.textContent = `Centro: ${centro.idCentro} - ${centro.ciudad} - ${centro.direccion}`;
+            
+            centrosSelect.appendChild(option)
+            }
+     });     
+    });
+    
+   centrosSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    cantVacunas.value=""
+    const optionVacia2 = document.createElement("option");
+    optionVacia2.value = "-";
+    optionVacia2.textContent = "-";
+    const optionVacia3 = document.createElement("option");
+    optionVacia3.value = "-";
+    optionVacia3.textContent = "-";
+    const optionVacia4 = document.createElement("option");
+    optionVacia4.value = "-";
+    optionVacia4.textContent = "-";
+    vacunasSelect.innerHTML = '';
+    vacunasSelect.appendChild(optionVacia)
+    vacunasSelect.disabled= true 
+    enfermerosSelect.innerHTML = '';
+    enfermerosSelect.appendChild(optionVacia2)
+    enfermerosSelect.disabled= true
+    loteSelect.innerHTML = '';
+    loteSelect.appendChild(optionVacia3)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia4)
+    subloteSelect.disabled= true 
+   
+    
+    const vacunasSet = new Set()  
+    resultado.forEach(centro => {     
+       if(centro.idCentro==centrosSelect.value){     
+        vacunasSet.add(centro.tipoVacuna)       
+            }
+     });     
+    enfermeros.forEach(enfermero=>{
+        if(enfermero.idCentro==centrosSelect.value){
+            enfermerosSelect.disabled= false 
+            
+            
+            const option = document.createElement("option");
+            option.value = enfermero.idEnfermero
+            option.textContent = `Id: ${enfermero.idEnfermero} - Nombre: ${enfermero.nombre}`
+            enfermerosSelect.appendChild(option)
+        }
+    })
+    
+    vacunasSet.forEach(vacuna => {
+       vacunasSelect.disabled= false 
+       const option = document.createElement("option");
+       option.value = vacuna
+       option.textContent = vacuna
+       vacunasSelect.appendChild(option)
+      });  
+     });
+
+   vacunasSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia2 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    loteSelect.innerHTML = '';
+    cantVacunas.value=""
+    loteSelect.appendChild(optionVacia)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia2)
+    subloteSelect.disabled= true
+    
+    const lotesSet = new Set() 
+    resultado.forEach(centro => {
+        if(centro.tipoVacuna===vacunasSelect.value&&centro.idCentro==centrosSelect.value){
+        lotesSet.add(centro.idLote)       
+        }
+      });     
+    lotesSet.forEach(lote => {
+       loteSelect.disabled= false 
+       const option = document.createElement("option");
+       option.value = lote
+       option.textContent = lote
+       loteSelect.appendChild(option)
+     });     
+    });
+
+   loteSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia)
+    subloteSelect.disabled= true 
+    cantVacunas.value=""
+    const sublotesSet = new Set() 
+    resultado.forEach(centro => {
+        if(centro.idLote==loteSelect.value&&centro.idCentro==centrosSelect.value){
+            sublotesSet.add(centro.id)  
+            fechaAplicacion.min=centro.fechaRecepcion      
+            fechaAplicacion.max= new Date().toISOString().split('T')[0];     
+            }
+    }); 
+    sublotesSet.forEach(sublote => {
+        subloteSelect.disabled= false 
+        const option = document.createElement("option");
+        option.value = sublote
+        option.textContent = sublote
+        subloteSelect.appendChild(option)
+     }); 
+     
+     
+    });
+
+    subloteSelect.addEventListener('change', () => {
+      cantVacunas.value = ""
+      const cantidadVacunas=resultado.find((centro) => centro.id == subloteSelect.value).cantVacunas
+      cantVacunas.value = cantidadVacunas;  
+      
+    }) 
+
+    enfermerosSelect.addEventListener('change', () => {
+      if(!enfermerosSelect||enfermerosSelect.value==="-"){
+
+       nombreEnfermero.disabled=false
+      } else{
+        nombreEnfermero.value=""
+        nombreEnfermero.disabled=true
+      }
+      
+    }) 
+       
+  - if (typeof alert !== "undefined")
+        script.
+          Swal.fire({
+            title: '#{alertTitle}',
+            text: '#{alertMessage}',
+            icon: '#{alertIcon}',
+            type: "success",
+            showConfirmButton: #{showConfirmButton},
+            timer: #{timer}
+          }).then(() => {
+            window.location = '/#{ruta}';
+          })
+
+    

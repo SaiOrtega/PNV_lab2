@@ -1,0 +1,64 @@
+nav
+    //- button.btn.btn-primary(type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' data-bs-whatever='@mdo') Acceso 
+    #exampleModal.modal.fade(tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          .modal-header
+              h1#exampleModalLabel.modal-title.fs-5 Registrate
+              button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+          .modal-body           
+            form(action="/auth/registrarse" method="POST") 
+              div.mb-3
+                label(for="exampleInputName" class="form-label") Nombre
+                  input(type="text" class="form-control" ,name="nombre")
+
+                label(for="exampleInputName" class="form-label") Apellidos
+                  input(type="text" class="form-control" ,name="apellidos")
+
+                label(for="exampleInputNumber" class="form-label") Dni
+                  input(type="number" class="form-control" ,name="dni")
+
+                label(for="exampleInputEmail1" class="form-label") Email 
+                  input(type="email" class="form-control", name="email")           
+              div.mb-3
+                label(for="exampleInputPassword1" class="form-label") Password
+                input(type="password" class="form-control" name="password")   
+              button(type="submit" class="btn btn-primary") Register
+          .modal-header
+              h1#exampleModalLabel.modal-title.fs-5 Login
+          .modal-body     
+            form(action="/auth/login" method="POST" id="mi-formulario" ) 
+              div.mb-3                
+                label(for="exampleInputEmail1" class="form-label", required) Email 
+                  input(type="email" class="form-control", name="email", placeholder="Ingrese su email",autofocus)           
+              div.mb-3
+                label(for="exampleInputPassword1" class="form-label", required) Password
+                input(type="password" class="form-control" name="password", placeholder="Ingrese su password")   
+              button(type="submit" class="btn btn-primary") Login 
+                   
+script.
+  
+  const formulario = document.querySelector('#mi-formulario');
+  const modal = document.getElementById('exampleModal');
+  const instance = bootstrap.Modal.getInstance(modal);   
+
+  formulario.addEventListener('submit', (event) => {
+  event.preventDefault(); // Prevenir que se envíe el formulario
+
+  const datosFormulario = new FormData(formulario); // Obtener los datos del formulario
+
+    fetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: datosFormulario.get('email'),
+        password: datosFormulario.get('password'),
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        localStorage.setItem('token', data.token); // Almacenar el token en el almacenamiento
+        instance.hide(); 
+    })
+    .catch((err) => console.error(err));
+  });      

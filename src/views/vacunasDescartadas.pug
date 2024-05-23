@@ -1,0 +1,62 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.my-5.form-signin.m-auto.px-5.mt-5.w-100.position-relative(data-bs-theme="primary")
+    if resultados && resultados.length > 0
+      h1.my-5.h1.text-center Lotes Descartados
+      hr
+      .d-flex.my-3.form-floating.justify-content.align-items-center.mx-auto.col-8.text-center
+        h3.h3.mx-auto Datos 
+      table.table.table-striped.text-center(data-bs-theme='primary')
+       thead.sticky-top(style="background-color: #0000ff;")
+         tr           
+           th N° Reg
+           th Descartado de
+           th Vacuna
+           th Nombre Comercial 
+           th Nombre Laboratorio
+           th Origen 
+           th Fecha de Fabricacion
+           th Fecha de Vencimiento
+           th Motivo de Descarte 
+           th Usuario Persona a Cargo 
+           th Descartar
+       tbody
+         each item in resultados
+           tr
+             td= item.idLote             
+             td= item.tipoLote
+             td= item.tipoVacuna
+             td= item.nombreComercial 
+             td= item.laboratorio
+             td= item.origen
+             td= item.fechaFabricacion
+             td= item.fechaVencimiento 
+             td= item.motivoDescarte
+             td= `Id: ${item.idPersonaACargo} - ${item.personaACargoNombre} ${item.personaACargoApellido}`
+             if item.motivoDescarte!=="Vencida" 
+              td
+                form(id=`deleteForm${item.idDescarte}`, action=`/borrarDescarte/${item.idDescarte}?_method=DELETE`, method='POST', onsubmit=`return confirmarEliminacion(event)`)
+                  button(type='submit', class='btn btn-danger')
+                    i(class='fa fa-trash') 
+                  .form-check.d-flex.flex-column.align-items-center.p-0 
+                   input.form-check-input.p-0.mx-auto(type="checkbox" name="restaurarLote") 
+                   label.form-check-label.p-0.fs-7(for="restaurarLote") Restaurar Lote Descartado 
+             else 
+               td              
+      
+      
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

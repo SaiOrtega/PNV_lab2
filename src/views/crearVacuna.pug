@@ -1,0 +1,47 @@
+include includes/layout.pug
+block scripts
+  script(defer src="scripts/alertas.js")
+
+block content
+
+  main.m-auto.container.mt-5.w-100.position-relative(data-bs-theme="primary")  
+    h1.h1.text-center(style="color: #FF5722;") Crear Vacuna    
+    
+    form#compraForm.form.row.g-3.w-100.mx-auto.mt-2(action="/api/vacunas/crearVacuna", method="post" data-bs-theme="primary" onsubmit=`return confirmarCreacion(event)`)
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+        input#tipoVacuna.form-control(name="tipoVacuna" type="text" required style="border-color: #FF5722;")
+        label(for="tipoVacuna" style="color: #FF5722; font-weight: bold;")  Tipo de Vacuna 
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+       input#nombreComercial.form-control(name="nombreComercial" type="text" required style="border-color: #FF5722;")
+       label(for="nombreComercial" style="color: #FF5722; font-weight: bold;")  Nombre Comercial
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+       input#paisOrigen.form-control(name="paisOrigen"  type="text" required style="border-color: #FF5722;")
+       label(for="paisOrigen" style="color: #FF5722; font-weight: bold;")  Pais de Origen  
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+        input#nobreLaboratorio.form-control(name="nobreLaboratorio" type="text" required style="border-color: #FF5722;")
+        label(for="nobreLaboratorio" style="color: #FF5722; font-weight: bold;") Laboratorio  
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+        input#emailLaboratorio.form-control(name="emailLaboratorio" type="email" required style="border-color: #FF5722;")
+        label(for="emailLaboratorio" style="color: #FF5722; font-weight: bold;")  Email  
+      .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-6.col-mx-auto
+        input#telefonoLaboratorio.form-control(name="telefonoLaboratorio" type="number" required style="border-color: #FF5722;")
+        label(for="telefonoLaboratorio" style="color: #FF5722; font-weight: bold;")  Teléfono   
+      
+      .btn-form.d-flex
+        button.btn.btn-primary.d-block.mx-auto(type='submit' style="background-color: #FF5722; border-color: #FF5722;") Crear
+        
+
+      - if (typeof alert !== "undefined")
+        script.
+          Swal.fire({
+            title: '#{alertTitle}',
+            text: '#{alertMessage}',           
+            showConfirmButton: #{showConfirmButton},
+            timer: #{timer}
+          }).then(() => {
+            window.location.href = window.location.href;
+          })
+
+  
+    
+ 

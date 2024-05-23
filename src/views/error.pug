@@ -1,0 +1,47 @@
+
+html
+  head    
+
+    title Error
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        text-align: center;
+        padding: 50px;
+      }
+      .error-container {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+      }
+
+  body
+    .error-container
+      if code === 404
+        h1 Página no encontrada
+        p Lo sentimos, la página que buscas no está disponible.
+
+      if errorData 
+        h1 Error #{errorData.error.code}
+        p Ocurrió un error inesperado: #{errorData.error.message}
+
+      if error 
+        p #{error.message}
+
+
+      
+        
+      a.button.button-primary(href='/') Volver
+       
+
+
+
+   
+     
+   
+
+
+  

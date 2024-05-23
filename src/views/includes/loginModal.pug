@@ -1,0 +1,102 @@
+nav
+
+//- Modal de Login
+#loginModal.modal.fade(tabindex='-1' aria-labelledby='loginModalLabel' aria-hidden='true')
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      .modal-header
+        h1#loginModalLabel.modal-title.fs-5 Login
+        button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+      .modal-body     
+        form(action="/auth/login" method="POST" id="login-form")
+          .mb-3                
+            label(for="loginEmail" class="form-label", required) Email 
+            input#loginEmail(type="email" class="form-control" name="email" placeholder="Ingrese su email" autofocus)           
+          .mb-3
+            label(for="loginPassword" class="form-label", required) Password
+            input#loginPassword(type="password" class="form-control" name="password" placeholder="Ingrese su password")   
+          button(type="submit" class="btn btn-primary") Login 
+      .modal-footer
+        p
+          | ¿No tienes una cuenta?
+          a(href='#' data-bs-toggle='modal' data-bs-target='#registerModal' data-bs-dismiss='modal') Regístrate aquí
+
+//- Modal de Registro
+#registerModal.modal.fade(tabindex='-1' aria-labelledby='registerModalLabel' aria-hidden='true')
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      .modal-header
+        h1#registerModalLabel.modal-title.fs-5 Registrate
+        button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+      .modal-body           
+        form(action="/auth/registrarse" method="POST") 
+          .mb-3
+            label(for="registerName" class="form-label") Nombre
+            input#registerName(type="text" class="form-control" name="nombre")
+
+            label(for="registerSurname" class="form-label") Apellidos
+            input#registerSurname(type="text" class="form-control" name="apellidos")
+
+            label(for="registerDni" class="form-label") Dni
+            input#registerDni(type="number" class="form-control" name="dni")
+
+            label(for="registerEmail" class="form-label") Email 
+            input#registerEmail(type="email" class="form-control" name="email")           
+          .mb-3
+            label(for="registerPassword" class="form-label") Password
+            input#registerPassword(type="password" class="form-control" name="password")   
+          button(type="submit" class="btn btn-primary") Register
+
+script.
+  const loginForm = document.querySelector('#login-form');
+  const loginModal = document.getElementById('loginModal');
+  const loginInstance = bootstrap.Modal.getInstance(loginModal);   
+
+  loginForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevenir que se envíe el formulario
+
+    const loginData = new FormData(loginForm); // Obtener los datos del formulario
+
+    fetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: loginData.get('email'),
+        password: loginData.get('password'),
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      localStorage.setItem('token', data.token); // Almacenar el token en el almacenamiento
+      loginInstance.hide(); 
+    })
+    .catch((err) => console.error(err));
+  });
+  
+  const registerForm = document.querySelector('#register-form');
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(registerForm);
+
+    const response = await fetch('/auth/registrarse', {
+        method: 'POST',
+        body: JSON.stringify({
+            email: formData.get('email')            
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        const data = await response.text();
+        document.documentElement.innerHTML = data; // Actualizar el contenido del DOM con la nueva página
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        localStorage.setItem('token', token);
+    } else {
+        const data = await response.json();
+        console.error('Error:', data.error);
+    }
+  });
+      

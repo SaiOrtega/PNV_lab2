@@ -1,0 +1,129 @@
+include includes/layout.pug
+block link
+  link(href='css/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+ main.my-5.w-100.position-relative(data-bs-theme="primary")
+  h1.h1.my-5.text-center.mb-3(style="color: #FF5722;") Aplicaciones
+    
+  h3.h3.my-3.text-center(style="color: #FF5722;") Datos 
+  table.mx-1.table.table-striped.text-center(data-bs-theme='primary', style="background-color: #F8F9FA; border-radius: 10px;")
+    thead.sticky-top(style="background-color:#FF5722; color: black;")
+      tr
+        th(scope="col") Id Lote
+        th(scope="col") Id Sublote Provincia
+        th(scope="col") Id Sublote Centro           
+        th(scope="col") Centro de Vacunacion
+        th(scope="col") Nombre Paciente
+        th(scope="col") Apellido Paciente
+        th(scope="col") DNI Paciente
+        th(scope="col") Genero Paciente
+        th(scope="col") Enfermero 
+        th(scope="col") Vacuna
+        th(scope="col") Nombre Comercial 
+        th(scope="col") Nombre Laboratorio
+        th(scope="col") Fecha de Fabricacion
+        th(scope="col") Fecha de Vencimiento
+        th(scope="col") Fecha de Aplicacion
+        th(scope="col") Vencida  
+        th(scope="col") Estado
+        
+            
+    tbody
+      each item in resultado
+        tr
+          td= item.idLote   
+          td= item.idSubloteProv
+          td= item.idSubloteCentro
+          td= `Centro ${item.idCentro}: ${item.ciudad}, ${item.provincia}, (${item.direccion})`
+          td= item.pacienteNombre
+          td= item.pacienteApellido
+          td= item.pacienteDni
+          td= item.pacienteGenero
+          td= `Id: ${item.enfermeroId} - ${item.enfermero}`
+          td= item.vacuna
+          td= item.nombreComercial 
+          td= item.laboratorio
+          td= item.fechaFabricacion   
+          td= item.fechaVencimiento   
+          td= item.fechaAplicacion 
+          td(class=item.vencida ? "Vencida" : "noVencida")= item.vencida ? "VENCIDA" : "NO VENCIDA" 
+          td(class=item.estadoLote==="descartado" ? "descartado" : "enStock")= item.estadoLote==="descartado" ? "Descartado" : "OK"                        
+             
+                        
+      
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          type: "success",
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })
+  
+    script.
+     const centroVacunacion = document.getElementById("centroVacunacion");
+     const provincias = document.getElementById("provincia");
+     const localidad = document.getElementById("localidad");
+     const resultado = !{JSON.stringify(resultado)};
+     console.log(resultado)
+     const centros = !{JSON.stringify(centroVac)};
+     const localidades = !{JSON.stringify(localidad)};
+     const optionVacia = document.createElement("option");
+     console.log(localidades)
+     optionVacia.value = "-";
+     optionVacia.textContent = "-";
+     centroVacunacion.appendChild(optionVacia);
+     const optionVacia2 = document.createElement("option");
+     optionVacia2.value = "-";
+     optionVacia2.textContent = "-";
+     localidad.appendChild(optionVacia2);
+     
+   
+     provincias.addEventListener("change", () => {
+       localidad.innerHTML = "";
+       centroVacunacion.innerHTML = "";
+       const ciudadesAgregadas = {};
+       const optionVacia = document.createElement("option");
+       const optionVacia2 = document.createElement("option");
+       optionVacia.value = "-";
+       optionVacia.textContent = "-";
+       optionVacia2.value = "-";
+       optionVacia2.textContent = "-";
+       centroVacunacion.appendChild(optionVacia2);
+       localidad.appendChild(optionVacia);
+   
+       localidades.forEach((loc) => {
+         if (loc.provincia === provincias.value) {
+           const ciudad = loc.ciudad;
+           if (!ciudadesAgregadas[ciudad]) {
+             const option = document.createElement("option");
+             option.value = ciudad;
+             option.textContent = ciudad;
+             localidad.appendChild(option);
+             ciudadesAgregadas[ciudad] = true;
+           }
+         }
+       });
+     });
+   
+     localidad.addEventListener("change", () => {
+       const centrosAgregados = {};
+       centroVacunacion.innerHTML = "";
+       centroVacunacion.appendChild(optionVacia);
+   
+       centros.forEach((centro) => {
+         if (provincias.value === centro.provincia && !centrosAgregados[centro.idCentro]) {
+           const option = document.createElement("option");
+           option.value = centro.idCentro;
+           option.textContent = `${centro.idCentro}-${centro.ciudad},${centro.provincia} (${centro.direccion})`;
+           centroVacunacion.appendChild(option);
+           centrosAgregados[centro.idCentro] = true;
+         }
+       });
+     });

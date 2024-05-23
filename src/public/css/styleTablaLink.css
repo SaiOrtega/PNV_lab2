@@ -1,0 +1,79 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.table-links {
+
+  height: 3vh;
+  display: flex;
+  width: 1.5vw;
+  margin-top: 3px;
+  margin-bottom: 3px;
+
+}
+
+.btnSinEstilo {
+  background-color: transparent;
+  border: none;
+  color: cadetblue;
+  cursor: pointer;
+}
+
+.fs-7 {
+  font-size: x-small;
+  margin: 0;
+  text-decoration: none;
+}
+
+.enViaje {
+  color: deepskyblue !important;
+}
+
+.enStock {
+  color: forestgreen !important;
+}
+
+.sinStock {
+  color: crimson !important;
+}
+
+.descartado {
+  color: gold !important;
+}
+
+.larger-switch {
+  /* Set the size of the switch */
+  width: 50px !important;
+  /* Adjust the width as needed */
+  height: 30px;
+  /* Adjust the height as needed */
+
+}
+
+.larger-switch::before {
+  /* Styles for the switch knob */
+  width: 1px;
+  /* Adjust the width as needed */
+  height: 1px;
+  /* Adjust the height as needed */
+  top: 8px;
+  /* Adjust the top position as needed to center the knob */
+  left: 8px;
+  /* Adjust the left position as needed to center the knob */
+}
+
+hr {
+  margin-top: 2rem;
+  border: 1;
+  border-top: 1px solid aliceblue;
+  ;
+  color: aliceblue;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030;
+  /* Asegura que la navbar esté por encima de otros elementos */
+}

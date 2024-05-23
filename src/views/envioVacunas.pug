@@ -1,0 +1,100 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.container.mt-5.w-100.position-relative(data-bs-theme="primary")
+    if resultado && resultado.length > 0
+      h1.h1.text-center.my-5(style="color: #FF5722;") Envio de Vacunas a Provincia
+      hr
+      form#recurso.form.form-floting.my-3.row.g-3.w-100.mx-auto(action="envioVacunas", method="post" data-bs-theme="primary" onsubmit=`return confirmarEnvio(event)`)
+       table.table.table-striped.text-center(data-bs-theme='primary')
+        thead.sticky-top(style="background-color: #FF5722;")
+          tr
+            th Id Lote
+            th Vacuna
+            th Nombre Comercial 
+            th Nombre Laboratorio
+            th Origen 
+            th Fecha de Fabricacion
+            th Fecha de Vencimiento 
+            th Vencida 
+            th Deposito 
+            th Cantidad de Vacunas en Stock
+            th Cantidad a Enviar
+        tbody
+          each item in resultado
+            tr
+              td= item.idLote
+              td= item.tipoVacuna
+              td= item.nombreComercial 
+              td= item.nombreLaboratorio
+              td= item.paisOrigen
+              td= item.fechaFabricacion
+              td= item.fechaVencimiento
+              td(class=item.vencida ? "Vencida" : "noVencida")= item.vencida ? "VENCIDA" : "NO VENCIDA" 
+              td= item.deposito
+              td= item.cantVacunas 
+              td  
+                input.form-control.mx-auto(type="number", name=`${item.idLote}` requiered)  
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap      
+         select#provincias.form-select(name="provincia" )
+          option(value="-") -      
+         label.ms-2(for="provincia")  Provincias 
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap      
+         select#deposito.form-select(name="deposito" disabled)
+          option(value="-") -
+         label.ms-2(for="deposito")  Depositos Provincia 
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap
+           button.btn.btn-primary.mx-auto.mb-5(type="submit",style="background-color: #FF5722; border-color: #FF5722;") Enviar
+
+
+
+       script.
+        const deposito = document.getElementById('deposito')
+        const provincia = document.getElementById('provincias')
+        const resultadoDepoProv= !{JSON.stringify(resultadoDepoProv)};
+        const provincias=Array.from(new Set(resultadoDepoProv.map(depo=>{
+          return depo.provincia
+        }))).sort((a, b) => a.localeCompare(b));
+
+        provincias.forEach(prov=>{
+          console.log(prov)
+          const option=document.createElement("option");
+          option.value=prov
+          option.textContent=prov
+          provincia.appendChild(option)
+        })
+
+        provincia.addEventListener('change', () => {
+          deposito.innerHTML = ""
+          deposito.disabled=false
+          const optionVacia=document.createElement("option");
+              optionVacia.value="-"
+              optionVacia.textContent="-"
+              deposito.appendChild(optionVacia)
+          resultadoDepoProv.forEach(depo=>{
+            if(provincia.value===depo.provincia){         
+              console.log(depo)
+              const option=document.createElement("option");
+              option.value= depo.idDepoProv
+              option.textContent=`Deposito: ${depo.idDepoProv} - ${depo.provincia} - ${depo.ciudad} (${depo.direccion})` 
+              deposito.appendChild(option)
+            }
+          })
+          console.log(provincia.value)
+        })       
+
+            
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

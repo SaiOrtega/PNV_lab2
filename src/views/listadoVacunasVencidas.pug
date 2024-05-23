@@ -1,0 +1,33 @@
+doctype html
+html
+  include includes/layout.pug
+    title Listado de Personas con Vacuna Vencida    
+  body
+    .container
+      h1.text-center.mt-5(style="color: #FF5722;") Listado de Personas con Vacuna Vencida
+
+      if data && data.length > 0
+        table.table.table-striped.table-hover.mt-4
+          thead.sticky-top(style="background-color: #FF5722;")
+            tr
+              th Nombre
+              th Apellido
+              th Provincia
+              th Centro de Vacunación
+              th Tipo de Vacuna
+              th Nombre Comercial
+              th Fecha de Aplicación
+          tbody
+            each item in data
+              tr
+                td= item.Persona.nombre
+                td= item.Persona.apellido
+                td= item.CentroVacunacion.Localidad.provincia
+                td= item.CentroVacunacion.direccion
+                td= item.Lote.Vacuna.tipoVacuna
+                td= item.Lote.Vacuna.nombreComercial
+                td= new Date(item.fechaAplicacion).toLocaleDateString()
+      else
+        .alert.alert-warning.mt-4 No se encontraron registros de personas con vacuna vencida.
+
+   

@@ -1,0 +1,205 @@
+include includes/layout.pug
+block link
+  link(href='/styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="/scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.container.mt-5.w-100.position-relative(data-bs-theme="dark")
+    if resultado && resultado.length > 0
+      h1.h1.text-center.my-5 Editar Lote Provincia
+      hr
+      .card.border.border-secondary.shadow-0.text-white.col-12.mx-auto.p-0.mb-3(style='background-color:#202124;')
+        .card-header.text-center 
+         h3.mx-0.my-2 Datos Lote Provincia #{idLote}
+        .card-body
+          .card-text.fs-4.text-primary Id Lote-Provedor:
+           p.fs-5.text-light #{loteProvincia.idLote}
+          .card-text.fs-4.text-primary Tipo de Vacuna:
+           p.fs-5.text-light #{loteProvincia.tipoVacuna}
+          .card-text.fs-4.text-primary Nombre Comercial:
+           p.fs-5.text-light #{loteProvincia.nombreComercial}
+          .card-text.fs-4.text-primary Laboratorio:
+           p.fs-5.text-light #{loteProvincia.nombreLaboratorio}
+          .card-text.fs-4.text-primary Origen:
+           p.fs-5.text-light #{loteProvincia.origen}
+          .card-text.fs-4.text-primary Fecha de Fabricacion:
+           p.fs-5.text-light #{loteProvincia.fechaFabricacion}
+          .card-text.fs-4.text-primary Cantidad de Vacunas:
+           p.fs-5.text-light #{loteProvincia.cantVacunas}
+          .card-text.fs-4.text-primary Fecha de Vencimiento:
+           p.fs-5.text-light #{loteProvincia.fechaVencimiento}
+          .card-text.fs-4.text-primary Fecha de Recepcion:
+           p.fs-5.text-light #{loteProvincia.fechaRecepcion}
+          .card-text.fs-4.text-primary Deposito:
+           p.fs-5.text-light #{loteProvincia.idDepoProv} - #{loteProvincia.ciudad}, #{loteProvincia.provincia} (#{loteProvincia.direccion})
+      .d-flex.my-3.form-floating.justify-content.align-items-center.mx-auto.col-8.text-center.flex-column
+        h3.h3.my-1.mx-auto Nuevos Datos Del Lote Provincia #{idLote}
+        p.p-0.m-0 * Dejar en Blanco los atributos que no quiere modificar 
+      form#recurso.form.form-floting.my-3.row.g-3.w-100.mx-auto(action=`/editarLoteProvPost/${idLote}`, method="post" data-bs-theme="dark" onsubmit=`return confirmarModificacion(event)`)
+       .d-flex.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#loteSelect.form-select(name="loteSelect" required)
+         option(value="-") -    
+        label#loteSelectLabel.ms-2(for="loteSelect") Lote Nacion
+       .card.border.border-secondary.shadow-0.text-white.col-12.mx-auto.p-0.mb-3(style='background-color:#202124;')
+        .card-header.text-center 
+         h3.mx-0.my-2 Datos Lote
+        .card-body
+          #vacuna.card-text.fs-4.text-primary Tipo de Vacuna:
+          #nombreComercial.card-text.fs-4.text-primary Nombre Comercial:
+          #laboratorio.card-text.fs-4.text-primary Laboratorio:
+          #origen.card-text.fs-4.text-primary Origen:
+          #FechaFabricacion.card-text.fs-4.text-primary Fecha de Fabricacion:
+          #FechaVencimiento.card-text.fs-4.text-primary Fecha de Vencimiento:
+          #FechaAdquisicion.card-text.fs-4.text-primary Fecha de Adquisicion:
+       .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-12.col-md-12
+        input#cantidadVacunas.form-control(name="cantidadVacunas" type="number")
+        label(for="paisOrigen")  Cantidad de Vacunas    
+       .d-flex.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap      
+         h3.h3 Deposito de Provincia   
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap      
+         select#provincias.form-select(name="provincia" )
+          option(value="-") -      
+         label.ms-2(for="provincia")  Provincias 
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap      
+         select#deposito.form-select(name="deposito" disabled)
+          option(value="-") -
+         label.ms-2(for="deposito")  Depositos Provincia 
+       .mb-3.form-floating.d-flex.justify-content-center.mx-auto.col-12.col-md-12
+        input#fechaRecepcion.form-control(name="fechaRecepcion" type="date")
+        label(for="fechaRecepcion")  Fecha Recepcion 
+       .form-check.d-flex.flex-column.align-items-center.p-0.form-switch
+
+        input#devolverVacunas.form-check-input.my-2.mx-auto(type="checkbox" name="devolverVacuna" disabled) 
+        label.form-check-label.fs-6(for="devolverVacuna") Devolver Vacunas al Lote Anterior     
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-12.text-center.flex-wrap
+           button.btn.btn-primary.mx-auto.mb-5
+
+            i.fa-solid.fa-pen-to-square &nbsp; Modificar
+
+
+
+       script.
+        const deposito = document.getElementById('deposito')
+        const loteprovedorOriginal=!{JSON.stringify(loteProvincia)}.idLote
+        const provincia = document.getElementById('provincias')
+        const loteNacion=!{JSON.stringify(resultado)};
+        const resultadoDepoProv= !{JSON.stringify(resultadoDepoProv)};
+        const loteSelect = document.getElementById('loteSelect');
+        const devolverVacunas = document.getElementById('devolverVacunas');
+        console.log(loteprovedorOriginal)
+
+        const vacuna = document.getElementById('vacuna');
+        const nombreComercial = document.getElementById('nombreComercial');
+        const laboratorio = document.getElementById('laboratorio');
+        const origen = document.getElementById('origen');
+        const FechaFabricacion = document.getElementById('FechaFabricacion');
+        const FechaVencimiento = document.getElementById('FechaVencimiento');
+        const FechaAdquisicion = document.getElementById('FechaAdquisicion');
+    
+        const vacunaP = document.createElement('p');
+        vacunaP.classList.add("fs-5","text-light")
+        vacuna.appendChild(vacunaP)
+        const nombreComercialP = document.createElement('p')
+        nombreComercialP.classList.add("fs-5","text-light")
+        nombreComercial.appendChild(nombreComercialP)
+        const laboratorioP = document.createElement('p')
+        laboratorioP.classList.add("fs-5","text-light")
+        laboratorio.appendChild(laboratorioP)
+        const origenP = document.createElement('p')
+        origenP.classList.add("fs-5","text-light")
+        origen.appendChild(origenP)
+        const FechaFabricacionP = document.createElement('p')
+        FechaFabricacionP.classList.add("fs-5","text-light")
+        FechaFabricacion.appendChild(FechaFabricacionP)
+        const FechaVencimientoP = document.createElement('p')
+        FechaVencimientoP.classList.add("fs-5","text-light")
+        FechaVencimiento.appendChild(FechaVencimientoP)
+        const FechaAdquisicionP = document.createElement('p')
+        FechaAdquisicionP.classList.add("fs-5","text-light")
+        FechaAdquisicion.appendChild(FechaAdquisicionP)
+
+        const provincias=Array.from(new Set(resultadoDepoProv.map(depo=>{
+          return depo.provincia
+        }))).sort((a, b) => a.localeCompare(b));
+
+        provincias.forEach(prov=>{
+
+          const option=document.createElement("option");
+          option.value=prov
+          option.textContent=prov
+          provincia.appendChild(option)
+        })
+
+        provincia.addEventListener('change', () => {
+          deposito.innerHTML = ""
+          deposito.disabled=false
+          const optionVacia=document.createElement("option");
+              optionVacia.value="-"
+              optionVacia.textContent="-"
+              deposito.appendChild(optionVacia)
+          resultadoDepoProv.forEach(depo=>{
+            if(provincia.value===depo.provincia){         
+              console.log(depo)
+              const option=document.createElement("option");
+              option.value= depo.idDepoProv
+              option.textContent=`Deposito: ${depo.idDepoProv} - ${depo.provincia} - ${depo.ciudad} (${depo.direccion})` 
+              deposito.appendChild(option)
+            }
+          })
+     
+        })
+
+        loteNacion.forEach(lote=>{
+          if(lote.idLote!==loteprovedorOriginal){
+            const option = document.createElement('option');
+        option.value= lote.idLote
+        option.textContent= `Lote: ${lote.idLote}`
+        loteSelect.appendChild(option)
+          }
+        
+        })
+
+        loteSelect.addEventListener('change', () => {       
+            vacunaP.innerText="" 
+            nombreComercialP.innerText=""
+            laboratorioP.innerText=""
+            origenP.innerText=""
+            FechaFabricacionP.innerText=""
+            FechaVencimientoP.innerText=""
+            FechaAdquisicionP.innerText=""
+            console.log(loteSelect.value)
+          if(loteSelect.value!=="-"&&loteSelect.value!==""){
+            const loteAuxiliar= loteNacion.filter(lote => lote.idLote==loteSelect.value);
+            
+            vacunaP.innerText=loteAuxiliar[0].tipoVacuna
+            nombreComercialP.innerText=loteAuxiliar[0].nombreComercial
+            laboratorioP.innerText=loteAuxiliar[0].nombreLaboratorio
+            origenP.innerText=loteAuxiliar[0].paisOrigen
+            FechaFabricacionP.innerText=loteAuxiliar[0].fechaFabricacion
+            FechaVencimientoP.innerText=loteAuxiliar[0].fechaVencimiento
+            FechaAdquisicionP.innerText=loteAuxiliar[0].fechaAdquisicion!==null?loteAuxiliar[0].fechaAdquisicion:"No Adquirida"
+            
+            
+              devolverVacunas.disabled = false
+              
+            }else{
+              devolverVacunas.disabled = true
+              devolverVacunas.checked = false
+            }
+          
+        })
+        
+
+        
+    
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

@@ -1,0 +1,47 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.mx-auto.container.mt-5.w-50.position-relative(data-bs-theme="primary")
+    if provincias
+      h1.h1.text-center(style="color: #FF5722;") Agregar Deposito Provincial
+      hr
+      .d-flex.justify-content.align-items-center.mx-auto.col-8.text-center
+      form#reasignarForm.form.form-floting.row.g-3.w-100.mx-auto(action="agregarDepoProvincia", method="post" data-bs-theme="primary" onsubmit=`return confirmarAgregacionDeposito(event)`)
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+       
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center 
+        select#provinciaSelect.form-select(name="provinciaSelect" required)
+           option(value="-") -
+            each option in provincias
+             option(value=option)= option  
+        label.ms-2(for="provinciaSelect")  Provincias  
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center        
+        input#ciudad.form-control(name="ciudad" type="text  " placeholder="sds" required)
+        label.ms-2(for="ciudad")  Ciudad 
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center  
+        input#telefono.form-control(name="telefono" type="number" placeholder="sds" required)
+        label.ms-2(for="telefono")  Telefono
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center  
+        input#direccion.form-control(name="direccion" type="text" placeholder="sds" required)
+        label.ms-2(for="direccion")  Direccion
+       .d-flex.gap-5.form-floating.justify-content-nalign-items-center.mx-auto.col-12.text-center.fle-wrap
+           button(type="submit",style="background-color: #FF5722; border-color: #FF5722;").btn.btn-primary.mx-auto.mb-5 Agregar Deposito
+       
+  
+
+       
+  - if (typeof alert !== "undefined")
+        script.
+          Swal.fire({
+            title: '#{alertTitle}',
+            text: '#{alertMessage}',
+            icon: '#{alertIcon}',
+            showConfirmButton: #{showConfirmButton},
+            timer: #{timer}
+          }).then(() => {
+            window.location = '/#{ruta}';
+          })
+       

@@ -1,0 +1,71 @@
+html
+  head
+    include includes/head.pug
+    title Programa de Vacunación Nacional
+    style.
+      body {
+        background-image: url("img/fondo-germenes.jpg");
+        background-color: #0000ff; /* Color de fondo */
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100%;
+        background-attachment: fixed;
+        background-size: cover;
+        
+      }
+      .title {
+        font-size: 4em;
+        color: #3498db;
+        text-align: center;
+        padding: 20px;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        
+      }
+      .loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        position: relative;
+      }
+      .loader {
+        border : 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 300px;
+        height:300px;
+        animation: spin 1s linear infinite;
+        
+      }
+      @keyframes spin{
+        0%{
+          transform: rotate(0deg);
+        }
+        100%{
+          transform:rotate(360deg);
+        }
+      }
+      .centered-button {
+        position: absolute; 
+        width: 140px;
+        height: 140px;
+        padding: 13px 18px;
+        border-radius:80px;
+        font-size: 25px;
+        text-align: center; 
+        background-color: #000; /* Color de fondo */
+   
+      }     
+      
+      
+
+    body
+      h1.title Ingreso al sistema 
+      .container-fluid.row
+      .col-12.p-4
+      .loader-container
+        div.loader
+        button.centered-button.btn.btn-primary(type='button' data-bs-toggle='modal' data-bs-target='#loginModal' data-bs-whatever='@mdo') Inicio
+
+

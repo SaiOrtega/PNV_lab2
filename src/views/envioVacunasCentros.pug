@@ -1,0 +1,173 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.container.mt-5.w-100.position-relative(data-bs-theme="primary")
+    h1.h1.text-center.mb-5(style="color: #FF5722;") Envío a Centros
+    hr
+    if resultado && resultado.length > 0
+
+      form#distribucionCentro.form.form-floting.row.g-3.w-100.mx-auto(action="envioVacunasCentros", method="post" data-bs-theme="primary" onsubmit=`return confirmarEnvio(event)`)
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-6.text-center
+        select#provincia.form-select(name="provincia")
+           option(value="-") -
+            each optionValue, optionLabel in [...new Set(resultado.map(aux => aux.provincia))]
+             option(value=optionValue)= optionValue  
+        label.ms-2(for="provincia")  Provincia 
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-7.text-center.fle-wrap
+        select#deposito.form-select(name="deposito" disabled)
+           option(value="-") -
+        label.ms-2(for="deposito")  Deposito Provincial  
+       table.table.table-striped.text-center(data-bs-theme='primary')
+        thead.sticky-top(style="background-color: #FF5722;")
+          tr
+            th Id Lote
+            th Id Sublote
+            th Vacuna
+            th Nombre Comercial 
+            th Nombre Laboratorio 
+            th Fecha de Fabricación
+            th Fecha de Vencimiento 
+            th Vencida
+            th Cantidad de Vacunas en Stock
+            th Cantidad de Vacunas a enviar
+        tbody#tbody
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-6.text-center
+        select#centros.form-select(name="centro" disabled)
+            option(value="-") -
+        label.ms-2(for="centros")  Centros de Vacunación     
+       .d-flex.gap-5.form-floating.justify-content-ceneter.align-items-center.mx-auto.col-11.text-center.fle-wrap
+           button.btn.btn-primary.m-auto(type="submit",style="background-color: #FF5722; border-color: #FF5722;") Enviar          
+   
+
+    script.
+     const resultado = !{JSON.stringify(resultado)};
+     const centrosVacunacion=!{JSON.stringify(resultadoCentros)};
+     //console.log(resultado)
+     const provinciaSelect = document.getElementById('provincia');
+     const depositosSelect = document.getElementById('deposito');
+     const centrosSelect =document.getElementById('centros');
+     const tbody=document.getElementById('tbody');
+     
+     provinciaSelect.addEventListener('change', () => {
+        console.log(centrosVacunacion)
+       const provincia = provinciaSelect.value;
+       const setDepositos = new Set();
+       const optionVacia = document.createElement("option");
+       //console.log(resultado)
+       tbody.innerHTML = ''
+       optionVacia.value="-";
+       //const optionVacio = document.createElement("option");
+        optionVacia.value = "-";
+        optionVacia.textContent = "-";
+       // centrosSelect.appendChild(optionVacio)
+       // optionVacia.textContent="-"
+       depositosSelect.innerHTML = ''
+       depositosSelect.disabled=true
+       centrosSelect.disabled= true 
+       depositosSelect.appendChild(optionVacia)
+       
+       resultado.forEach(resu => {
+         if (resu.provincia === provincia && !setDepositos.has(resu.idDepoProv)) {
+           //console.log(resu);           
+           const option = document.createElement("option");
+           option.value = resu.idDepoProv;
+           option.textContent = `Deposito: ${resu.idDepoProv} - ${resu.direccion}`;
+           depositosSelect.append(option);
+           depositosSelect.disabled = false;       
+           // Agregar el depósito al conjunto
+           setDepositos.add(resu.idDepoProv);
+         }
+       });
+       
+       });
+
+       depositosSelect.addEventListener('change', () => {
+        //console.log(`ID DEPOSITO: ${depositosSelect.value}`)
+        const centro = depositosSelect.value;
+        centrosSelect.disabled= true
+        tbody.innerHTML = ''
+        centrosSelect.innerHTML = ''
+        const optionVacio = document.createElement("option");
+        optionVacio.value = "-";
+        optionVacio.textContent = "-";
+        centrosSelect.appendChild(optionVacio)
+
+        resultado.forEach(resu => {
+        if (resu.idDepoProv == centro) {
+            const tr = document.createElement("tr");
+            const idLote= document.createElement("td")
+            const idSublote= document.createElement("td")
+            const vacuna= document.createElement("td")
+            const nombreComercial= document.createElement("td")
+            const nombreLab= document.createElement("td")
+            const fechaFabricacion= document.createElement("td")
+            const fechaVencimiento= document.createElement("td")
+            const vencida= document.createElement("td")
+            const stock= document.createElement("td")   
+            const cantidadVacunas= document.createElement("td")
+            const inputCantidad= document.createElement("input")
+            
+            idLote.textContent=resu.idLote
+            idSublote.textContent=resu.idSublote
+            vacuna.textContent=resu.tipoVacuna
+            nombreComercial.textContent=resu.nombreComercial
+            nombreLab.textContent=resu.nombreLaboratorio
+            fechaFabricacion.textContent=resu.fechaFabricacion
+            fechaVencimiento.textContent=resu.fechaVencimiento
+            vencida.textContent=resu.vencida ? "Si" : "No"
+            stock.textContent=resu.cantVacunas
+            inputCantidad.classList.add("form-control","mx-auto")
+            inputCantidad.type="number"
+            inputCantidad.name=resu.idSublote           
+            cantidadVacunas.appendChild(inputCantidad)
+            tr.append(idLote,idSublote,vacuna,nombreComercial,nombreLab,fechaFabricacion,fechaVencimiento,vencida,stock,cantidadVacunas)
+            tbody.append(tr)   
+           }
+         });
+         if(depositosSelect!=="-"){
+            centrosVacunacion.forEach(centro => {
+                if(centro.provincia===provinciaSelect.value){
+                  centrosSelect.disabled= false;
+                  const option = document.createElement("option");
+                  option.value = centro.idCentro;
+                  option.textContent = `Centro: ${centro.idCentro} - ${centro.ciudad} - ${centro.direccion}`;
+                  centrosSelect.appendChild(option)
+                }
+            })
+         }
+       });
+      //-   function confirmarEnvio(event) {
+      //-     const inputsCantidad = document.querySelectorAll('input[type="number"]');
+      //-   let valid = true;
+      //-   inputsCantidad.forEach(input => {
+      //-     if (input.value === "" || input.value <= 0) {
+      //-       valid = false;
+      //-       input.classList.add("is-invalid");
+      //-     } else {
+      //-       input.classList.remove("is-invalid");
+      //-     }
+      //-   });
+
+      //-   if (!valid) {
+      //-     event.preventDefault();
+      //-     alert("Por favor, complete todos los campos de cantidad de vacunas con valores válidos.");
+      //-   }
+
+      //-   return valid;
+      //- }
+       
+  - if (typeof alert !== "undefined")
+        script.
+          Swal.fire({
+            title: '#{alertTitle}',
+            text: '#{alertMessage}',
+            icon: '#{alertIcon}',
+            showConfirmButton: #{showConfirmButton},
+            timer: #{timer}
+          }).then(() => {
+            window.location = '/#{ruta}';
+          })
+       

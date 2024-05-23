@@ -1,0 +1,250 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.mx-auto.container.mt-5.w-50.position-relative(data-bs-theme="primary")
+    if resultados && resultados.length > 0
+      h1.h1.text-center(style="color: #FF5722;") Reasignación de Lotes
+      hr
+      .d-flex.justify-content.align-items-center.mx-auto.col-8.text-center
+      form#reasignarForm.form.form-floting.row.g-3.w-100.mx-auto(action="reasignarLotes", method="post" data-bs-theme="primary" onsubmit=`return confirmarReasignacion(event)`)
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        h3.h3.mx-auto(style="color: #FF5722;") Origen      
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center 
+        select#provinciaSelect.form-select(name="provinciaSelect" required)
+           option(value="-") -
+            each optionValue, optionLabel in [...new Set(localidades.map(aux => aux.provincia))]
+             option(value=optionValue.idLocalidad)= optionValue  
+        label.ms-2(for="provinciaSelect")  Provincias  
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#centros.form-select(name="centro" disabled required)
+        label.ms-2(for="centros")  Centros de Vacunacion Emisores     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#vacunas.form-select(name="vacunas" disabled required)
+        label.ms-2(for="vacunas")  Vacunas     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#lote.form-select(name="lote" disabled required)
+        label.ms-2(for="lote")  Lote     
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#sublote.form-select(name="sublote" disabled required)
+        label.ms-2(for="sublote")  Sublote 
+       .d-flex.gap-5.justify-content.align-items-center.mx-auto.col-12.text-center
+        label.ms-2(for="sublote")(style="color: #FF5722;")  Cantidad de Vacunas en Stock
+        input#cantVacunas.form-control(name="cantVacunas" disabled required) 
+       .d-flex.gap-5.mt-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        h3.h3.mx-auto(style="color: #FF5722;") Destino
+       .d-flex.gap-5.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        select#centroReceptor.form-select(name="centroReceptor" disabled required)
+        label.ms-2(for="centroReceptor")  Centros  
+       .d-flex.gap-5.form-floating.justify-content-nalign-items-center.mx-auto.col-12.text-center.fle-wrap
+           button(type="submit",style="background-color: #FF5722; border-color: #FF5722;").btn.btn-primary.mx-auto.mb-5 Reasignar
+          
+       
+  script.
+   const resultado = !{JSON.stringify(resultados)};
+   const centrosVacunacion=!{JSON.stringify(resultadoCentros)};
+   const centrosVacunacionTodos=!{JSON.stringify(resultadoCentrosTodos)};
+   const provinciaSelect = document.getElementById('provinciaSelect');
+   const centrosSelect =document.getElementById('centros');
+   const vacunasSelect = document.getElementById('vacunas');
+   const loteSelect = document.getElementById('lote');
+   const subloteSelect = document.getElementById('sublote');
+   const cantVacunas = document.getElementById('cantVacunas');
+   const centroReceptor = document.getElementById('centroReceptor');
+
+   cantVacunas.value=""
+
+   provinciaSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia2 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia3 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia4 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia5 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    cantVacunas.value=""
+
+    const provincia = provinciaSelect.value;
+    centrosSelect.innerHTML = '';
+    centrosSelect.appendChild(optionVacia)
+    centrosSelect.disabled= true 
+    vacunasSelect.innerHTML = '';
+    vacunasSelect.appendChild(optionVacia2)
+    vacunasSelect.disabled= true 
+    loteSelect.innerHTML = '';
+    loteSelect.appendChild(optionVacia4)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia5)
+    subloteSelect.disabled= true
+     centroReceptor.innerHTML = '';
+    centroReceptor.disabled= true 
+
+    centrosVacunacion.forEach(centro => {
+        if(centro.provincia===provinciaSelect.value){
+            centrosSelect.disabled= false 
+            const option = document.createElement("option");
+            option.value = centro.idCentro;
+            option.textContent = `Centro: ${centro.idCentro} - ${centro.ciudad} - ${centro.direccion}`;
+            
+            centrosSelect.appendChild(option)
+            }
+     });     
+    });
+    
+   centrosSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    cantVacunas.value=""
+    const optionVacia2 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia3 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia4 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    vacunasSelect.innerHTML = '';
+    vacunasSelect.appendChild(optionVacia)
+    vacunasSelect.disabled= true 
+    loteSelect.innerHTML = '';
+    loteSelect.appendChild(optionVacia3)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia4)
+    subloteSelect.disabled= true 
+     centroReceptor.innerHTML = '';
+    centroReceptor.disabled= true 
+    
+    const vacunasSet = new Set()  
+    resultado.forEach(centro => {     
+       if(centro.idCentro==centrosSelect.value){     
+        vacunasSet.add(centro.tipoVacuna)       
+            }
+     });        
+   
+    
+    vacunasSet.forEach(vacuna => {
+       vacunasSelect.disabled= false 
+       const option = document.createElement("option");
+       option.value = vacuna
+       option.textContent = vacuna
+       vacunasSelect.appendChild(option)
+      });  
+     });
+
+   vacunasSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    const optionVacia2 = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    loteSelect.innerHTML = '';
+    cantVacunas.value=""
+    loteSelect.appendChild(optionVacia)
+    loteSelect.disabled= true
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia2)
+    subloteSelect.disabled= true
+     centroReceptor.innerHTML = '';
+    centroReceptor.disabled= true 
+    
+    const lotesSet = new Set() 
+    resultado.forEach(centro => {
+        if(centro.tipoVacuna===vacunasSelect.value&&centro.idCentro==centrosSelect.value){
+        lotesSet.add(centro.idLote)       
+        }
+      });     
+    lotesSet.forEach(lote => {
+       loteSelect.disabled= false 
+       const option = document.createElement("option");
+       option.value = lote
+       option.textContent = lote
+       loteSelect.appendChild(option)
+     });     
+    });
+
+   loteSelect.addEventListener('change', () => {
+    const optionVacia = document.createElement("option");
+    optionVacia.value = "-";
+    optionVacia.textContent = "-";
+    subloteSelect.innerHTML = '';
+    subloteSelect.appendChild(optionVacia)
+    subloteSelect.disabled= true 
+    cantVacunas.value=""
+    centroReceptor.innerHTML = '';
+    centroReceptor.disabled= true 
+    const sublotesSet = new Set() 
+    resultado.forEach(centro => {
+        if(centro.idLote==loteSelect.value&&centro.idCentro==centrosSelect.value){
+            sublotesSet.add(centro.id)  
+      
+            }
+    }); 
+    sublotesSet.forEach(sublote => {
+        subloteSelect.disabled= false 
+        const option = document.createElement("option");
+        option.value = sublote
+        option.textContent = sublote
+        subloteSelect.appendChild(option)
+     }); 
+     
+     
+    });
+
+    subloteSelect.addEventListener('change', () => {
+      cantVacunas.value = ""
+      const cantidadVacunas=resultado.find((centro) => centro.id == subloteSelect.value).cantVacunas
+      cantVacunas.value = cantidadVacunas;  
+      const optionVacia = document.createElement("option");
+      optionVacia.value = "-";
+      optionVacia.textContent = "-";
+      centroReceptor.innerHTML = '';
+      centroReceptor.appendChild(optionVacia)
+      centroReceptor.disabled= false 
+
+      centrosVacunacionTodos.forEach(centro => {
+        console.log("centrosSelect.value")
+        console.log(centrosSelect.value)
+        console.log("centro.id")
+        console.log(centro.id)
+
+
+        if(centro.provincia===provinciaSelect.value&&centro.idCentro!=centrosSelect.value){  
+            const option = document.createElement("option");
+            option.value = centro.idCentro;
+            option.textContent = `Centro: ${centro.idCentro} - ${centro.ciudad} - ${centro.direccion}`;
+            centroReceptor.appendChild(option)
+        }
+       
+      });  
+     });
+
+
+
+       
+  - if (typeof alert !== "undefined")
+        script.
+          Swal({
+            title: '#{alertTitle}',
+            text: '#{alertMessage}',
+            icon: '#{alertIcon}',
+            showConfirmButton: #{showConfirmButton},
+            timer: #{timer}
+          }).then(() => {
+            window.location = '/#{ruta}';
+          })
+       

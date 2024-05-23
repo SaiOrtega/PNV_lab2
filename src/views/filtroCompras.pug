@@ -1,0 +1,106 @@
+doctype html
+html
+  include  includes/layout.pug
+    title Filtrar Compras
+      
+  body   
+    .container
+      h1.h1.text-center.mb-5(style="color: #FF5722;") Filtrar Compras de Vacunas
+
+      // Formulario de Filtros
+      form(method="get", action="/api/compras/filtrarCompras")
+        .form-group
+          label(for="fechainicio") Fecha de Inicio:
+          input#fechainicio.form-control(type="date", name="fechainicio", value=(fechainicio || ''))
+        
+        .form-group
+          label(for="fechafin") Fecha de Fin:
+          input#fechafin.form-control(type="date", name="fechafin", value=(fechafin || ''))
+        
+        .form-group
+          label(for="laboratorios") Laboratorio:
+          select#laboratorios.form-control(name="laboratorios")
+            option(value="-") Todos
+            if laboratorios && laboratorios.length
+              each laboratorio in laboratorios
+                option(value=laboratorio.nombre) #{laboratorio.nombre}
+
+        button.btn.btn-primary(type="submit",style="background-color: #FF5722;") Filtrar
+
+      // Mensajes de Alerta
+      if alert
+        .alert.alert-danger(role="alert")
+          strong #{alertTitle}:
+          p #{alertMessage}
+
+      // Resultados
+      if resultado && resultado.length
+        h2.h2.text-center.mb-5(style="color: #FF5722;") Resultados de la Búsqueda
+        table.table.table-striped.text-center
+          thead.sticky-top(style="background-color: #FF5722;")
+            tr
+              th ID Compra
+              th ID Lote
+              th Tipo Vacuna
+              th Nombre Laboratorio
+              th Nombre Comercial
+              th País de Origen
+              th Fecha de Fabricación
+              th Fecha de Vencimiento
+              th Estado
+              th Fecha de Adquisición
+              th Depósito
+              th Cantidad de Vacunas
+              th Fecha de Compra
+          tbody
+            each compra in resultado
+              tr
+                td= compra.idCompra
+                td= compra.idLote
+                td= compra.tipoVacuna
+                td= compra.nombreLaboratorio
+                td= compra.nombreComercial
+                td= compra.paisOrigen
+                td= compra.fechaFabricacion
+                td= compra.fechaVencimiento
+                td= compra.estado
+                td= compra.fechaAdquisicion
+                td= compra.deposito
+                td= compra.cantVacunas
+                td= compra.fechaCompra
+    
+
+      // Tabla de Resultados Totales
+      h2.h2.text-center.mb-5(style="color: #FF5722;") Todas las Compras
+      table.table.table-striped.text-center
+        thead.sticky-top(style="background-color: #FF5715;")
+          tr
+            th ID Compra
+            th ID Lote
+            th Tipo Vacuna
+            th Nombre Laboratorio
+            th Nombre Comercial
+            th País de Origen
+            th Fecha de Fabricación
+            th Fecha de Vencimiento
+            th Estado
+            th Fecha de Adquisición
+            th Depósito
+            th Cantidad de Vacunas
+            th Fecha de Compra
+        tbody
+          each compra in resultadoTodos
+            tr
+              td= compra.idCompra
+              td= compra.idLote
+              td= compra.tipoVacuna
+              td= compra.nombreLaboratorio
+              td= compra.nombreComercial
+              td= compra.paisOrigen
+              td= compra.fechaFabricacion
+              td= compra.fechaVencimiento
+              td= compra.estado
+              td= compra.fechaAdquisicion
+              td= compra.deposito
+              td= compra.cantVacunas
+              td= compra.fechaCompra

@@ -1,0 +1,100 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.px-5.my-5.w-100.position-relative(data-bs-theme="primary")
+    if resultado && resultado.length > 0
+      h1.h1.text-center(style="color: #FF5722;") Stock Nación
+      hr
+      .container.my-5 
+      
+      table.table.table-striped.text-center(data-bs-theme='primary')
+       thead.sticky-top(style="background-color: #FF5722;")
+         tr
+           th Id Lote
+           th Vacuna
+           th Nombre Comercial 
+           th Nombre Laboratorio
+           th Origen 
+           th Estado  
+           th Deposito 
+           th Cantidad Compradas 
+           th Stock
+           th Fecha de Compra
+           th Fecha de Recepción
+           th 
+       tbody
+         each item in resultado
+           tr
+             td= item.idLote
+             td= item.tipoVacuna
+             td= item.nombreComercial 
+             td= item.nombreLaboratorio
+             td= item.paisOrigen
+             if !item.fechaAdquisicion 
+              td(class="enViaje")= "Recepcionar"      
+               form(id=`${item.id}` action=`/api/lotes/loteEstado/${item.idLote}`, method="post" data-bs-theme="primary" onsubmit=`return confirmarRecepcion(event)`) 
+                .input-group.mb-3
+                 input.form-control(type="date", name="fechaAdquisicion" required) 
+                 button.btn.btn-success.btn-send(type='submit') 
+                  i.fa-regular.fa-circle-check  
+             else  
+              td(class=`${item.estado}`)= item.estado    
+             td= item.deposito
+             td= item.cantVacunasCompradas 
+             td= item.cantVacunas 
+             td= item.fechaCompra
+             if item.fechaAdquisicion===null
+              td(class=`${item.estado}`)= "En Viaje" 
+             else  
+              td= item.fechaAdquisicion  
+             if item.estado==="enStock"||item.estado==="enViaje"            
+              td
+                //- a.btn.btn-secondary.m-auto(style="width:40px"  href=`/api/lotes/editarLote/${item.idLote}`)
+                //-   i.fa-solid.fa-file-pen
+             
+             
+    script.
+     const resultado = !{JSON.stringify(resultado)};
+     const resultadoTodos = !{JSON.stringify(resultadoTodos)};
+     console.log(resultadoTodos)
+     const laboratoriosSelect = document.getElementById("laboratorios") 
+     const opcionVacia = document.createElement("option") 
+     const setLabs = new Set()
+     opcionVacia.textContent="-"
+     opcionVacia.value="-"
+     laboratoriosSelect.appendChild(opcionVacia)
+
+     if(resultadoTodos){
+      resultadoTodos.forEach(resu=>{
+      
+      setLabs.add(resu.nombreLaboratorio)
+     })
+     }else{
+      resultado.forEach(resu=>{
+      
+      setLabs.add(resu.nombreLaboratorio)
+     })
+     }
+
+     setLabs.forEach(labs=>{
+      const option = document.createElement("option")
+      
+      option.value=labs
+      option.textContent=labs
+      laboratoriosSelect.appendChild(option)
+     })
+   
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

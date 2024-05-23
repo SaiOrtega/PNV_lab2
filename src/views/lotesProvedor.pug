@@ -1,0 +1,55 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.px-5.my-5.w-100.position-relative(data-bs-theme="primary")
+    if resultadoFinal && resultadoFinal.length > 0
+      h1.h1.my-5.text-center(style="color: #FF5722;") Lotes-Provedor
+      hr
+      .d-flex.my-3.form-floating.justify-content.align-items-center.mx-auto.col-8.text-center
+      
+      table.table.table-striped.text-center(data-bs-theme='primary')
+       thead.sticky-top.z-index-1(style="background-color: #FF5722; color: black;")
+         tr
+           th Id Lote
+           th Vacuna
+           th Nombre Comercial 
+           th Nombre Laboratorio 
+           th Cantidad en Nacion 
+           th Cantidad en Provincia 
+           th Cantidad en Centros 
+           th Cantidad de Aplicadas
+           th Cantidad de Distribucion
+           th Cantidad de Descartadas
+           th Cantidad de Vencidas
+       tbody
+         each item in resultadoFinal
+           tr
+             td= item.idLote
+             td= item.tipoVacuna
+             td= item.nombreComercial 
+             td= item.nombreLaboratorio   
+             td= item.cantVacunasNacion
+             td= item.cantVacunasProvincia 
+             td= item.cantVacunasCentroVac
+             td= item.cantVacunasAplicadas
+             td= item.cantVacunasDistribucion
+             td= item.cantVacunasDescartadas
+             td= item.cantVacunasVencidas
+            
+        
+
+     
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

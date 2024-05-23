@@ -1,0 +1,81 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.px-5.my-5.w-100.position-relative(data-bs-theme="primary")
+    if resultado && resultado.length > 0
+      h1.h1.text-center(style="color: #FF5722;") Stock Centros    
+        
+      table.table.table-striped.text-center(data-bs-theme='primary')
+       thead.sticky-top(style="background-color: #FF5722;")
+         tr
+           th Id Lote Centro
+           th Id Lote
+           th Id subLote
+           th Vacuna
+           th Nombre Comercial 
+           th Nombre Laboratorio
+           th Fecha de Fabricacion
+           th Fecha de Vencimiento
+           th Vencida  
+           th Centro 
+           th Cantidad de Vacunas
+           th Estado
+           th Fecha de Recepcion
+           th 
+        
+            
+       tbody
+         each item in resultado
+           tr
+             td= item.idLoteCentro
+             td= item.idLote
+             td= item.idSublote
+             td= item.tipoVacuna
+             td= item.nombreComercial 
+             td= item.nombreLaboratorio
+             td= item.fechaFabricacion   
+             td= item.fechaVencimiento   
+             td(class=item.vencida ? "Vencida" : "noVencida")= item.vencida ? "VENCIDA" : "NO VENCIDA"
+             td= `Centro ${item.idCentro}: ${item.provincia}-${item.ciudad}-${item.direccion}`
+             td= item.cantVacunas 
+             td(class=`${item.estado}`)= item.estado
+             if item.fechaRecepcion===null 
+              td(class="compra")= "Recepcionar"      
+               form(id=`${item.idLoteCentro}` action=`centrosStockPost/${item.idLoteCentro}`, method="post" data-bs-theme="primary" onsubmit=`return confirmarRecepcion(event)`) 
+                .input-group.mb-3
+                 input.form-control(type="date", name="fechaRecepcion" required) 
+                 button.btn.btn-success.btn-send(type='submit') 
+                  i.fa-solid.fa-circle-check      
+           
+             else  
+              td=item.fechaRecepcion
+             if item.estado==="enStock"||item.estado==="enViaje"            
+              td  
+                //- a.btn.btn-secondary.m-auto(style="width:40px"  href=`/api/stockCentros/editarLoteCentro/${item.idLoteCentro}`)
+                //-   i.fa-solid.fa-file-pen
+             else
+              td
+            
+      
+    - if (typeof alert !== "undefined")
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })
+
+    script.
+     const resultado = !{JSON.stringify(resultado)};
+     const prov = !{JSON.stringify(prov)};
+     const tipoVac = !{JSON.stringify(tipoVac)};
+     console.log(resultado)
+   
+     

@@ -1,0 +1,76 @@
+include includes/layout.pug
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+block scripts
+  script(defer src="scripts/alertas.js")  
+block content
+  main.form-signin.m-auto.px-5.my-5.w-100.position-relative(data-bs-theme="primary")
+    if resultado && resultado.length > 0
+      h1.h1.text-center(style="color: #FF5722;") Stock Provincia
+      hr
+     
+      table.table.table-striped.text-center(data-bs-theme='primary')
+       thead.sticky-top(style="background-color: #FF5722;")
+         tr
+           th #
+           th Id Lote Provincia
+           th Id Lote
+           th Vacuna
+           th Nombre Comercial 
+           th Nombre Laboratorio
+           th Fecha de Fabricacion
+           th Fecha de Vencimiento
+           th Vencida  
+           th Deposito 
+           th Cantidad de Vacunas
+           th Estado
+           th Fecha de Recepcion
+           th 
+            
+       tbody
+         each item in resultado
+           tr
+             td= item.id
+             td= item.idDepoProv
+             td= item.idLote
+             td= item.tipoVacuna
+             td= item.nombreComercial 
+             td= item.nombreLaboratorio
+             td= item.fechaFabricacion   
+             td= item.fechaVencimiento   
+             td(class=item.vencida ? "Vencida" : "noVencida")= item.vencida ? "VENCIDA" : "NO VENCIDA"
+             td= `Deposito ${item.idDepoProv}: ${item.provincia}-${item.ciudad}-${item.direccion}`
+             td= item.cantVacunas 
+             td(class=`${item.estado}`)= item.estado
+             if item.fechaRecepcion===null 
+              td(class="compra")= "Recepcionar"      
+               form(id=`${item.id}` action=`marcarRecepcion/${item.id}`, method="post" data-bs-theme="primary" onsubmit=`return confirmarRecepcion(event)`) 
+                .input-group.mb-3
+                 input.form-control(type="date", name="fechaRecepcion" required) 
+                 button.btn.btn-success.btn-send(type='submit') 
+                  i.fa-solid.fa-circle-check    
+           
+             else  
+              
+              td=item.fechaRecepcion
+             if item.estado==="enStock"||item.estado==="enViaje"            
+              td  
+                //- a.btn.btn-secondary.m-auto(style="width:40px"  href=`editarLoteProv/${item.id}`)
+                //-   i.fa-solid.fa-file-pen
+             else
+              td
+                         
+    .d-flex.justify-content-ceneter.align-items-center.col-12 
+      
+    - if (typeof alert !== "undefined")
+      script.
+        
+        Swal({
+          title: '#{alertTitle}',
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: #{showConfirmButton},
+          timer: #{timer}
+        }).then(() => {
+          window.location = '/#{ruta}';
+        })

@@ -1,0 +1,54 @@
+include includes/layout.pug
+
+block link
+  link(href='styles/styleTablaLink.css' rel='stylesheet')  
+
+block scripts
+  script(defer src="scripts/alertas.js")  
+
+block content
+  main.form-signin.m-auto.container.mt-5.w-100.position-relative(data-bs-theme="primary")
+    h1.h1.text-center.mb-5(style="color: #FF5722;") Vacunas a Descartar   
+    .d-flex.my-3.form-floating.justify-content.align-items-center.mx-auto.col-8.text-center
+      h3.h3.mx-auto(style="color: #FF5722;") Lotes Vencidos No Descartados     
+      p.mx-auto(style="color: #FF5722;") Cantidad: #{vencidas.length} Se descartaron #{vencidas.length} vacunas.       
+    if vencidas.length > 0
+      table.my-4.mx-1.table.table-striped.text-center(data-bs-theme='primary')
+        thead.sticky-top(style="background-color:#FF5722;")
+          tr
+            th(scope="col") Id Lote         
+            th(scope="col") Centro 
+            th(scope="col") Vacuna
+            th(scope="col") Nombre Comercial 
+            th(scope="col") Nombre Laboratorio
+            th(scope="col") Fecha de Fabricación
+            th(scope="col") Fecha de Vencimiento 
+        tbody
+          each item in vencidas
+            tr
+              td= item.idLote   
+              td= `${item.idCentro}-${item.ciudad}, ${item.provincia}`
+              td= item.vacuna
+              td= item.nombreComercial 
+              td= item.laboratorio
+              td= item.fechaFabricacion.toLocaleDateString()   
+              td= item.fechaVencimiento.toLocaleDateString()
+    else
+      p.text-center(style="color: #FF5722;") No hay lotes vencidos.
+
+    form#recurso.my-3.form.form-floting.row.g-3.w-100.mx-auto(action="/descartarVencidas", method="post" data-bs-theme="primary" onsubmit=`return confirmarDescarteVencidas(event)`)
+      .d-flex.form-floating.justify-content.align-items-center.mx-auto.col-12.text-center
+        button.btn.btn-primary.mx-auto.my-5(type="submit", style="background-color: #FF5722; border-color: #FF5722;") Descartar          
+
+script.
+  if (typeof alert !== "undefined") {
+    Swal({
+      title: '#{alertTitle}',
+      text: '#{alertMessage}',
+      icon: '#{alertIcon}',
+      showConfirmButton: #{showConfirmButton},
+      timer: #{timer}
+    }).then(() => {
+      window.location = '/#{ruta}';
+    });
+  }
